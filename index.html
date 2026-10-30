@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>TATTVA TIDE</title>
+  <meta name="description" content="Live planetary-hour, tattva and swara clock, anchored to local sunrise." />
+  <meta name="theme-color" content="#080808" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Tattva Tide" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="masthead">
+    <h1>TATTVA <span>TIDE</span></h1>
+    <div class="sunline" id="sunline">—</div>
+  </header>
+
+  <main id="main">
+    <!-- NOW -->
+    <section class="view" id="view-now" data-view="now">
+      <div class="daybar" id="daybar" aria-hidden="true"><div class="daybar-track"><div class="daybar-day" id="daybar-day"></div><div class="daybar-now" id="daybar-now"></div></div><div class="daybar-labels"><span id="daybar-rise"></span><span id="daybar-set"></span><span id="daybar-nextrise"></span></div></div>
+
+      <article class="card" id="card-planet">
+        <header><h2>Planetary Hour</h2><span class="meta" id="pl-meta"></span></header>
+        <div class="card-body">
+          <div class="glyph" id="pl-glyph">☉</div>
+          <div class="big">
+            <div class="value" id="pl-planet">—</div>
+            <div class="sub" id="pl-hour">—</div>
+          </div>
+        </div>
+        <footer>
+          <div class="countdown"><span class="label">left</span><span class="time" id="pl-left">0:00</span></div>
+          <div class="next"><span class="label">next</span><span id="pl-next">—</span></div>
+        </footer>
+      </article>
+
+      <article class="card" id="card-tattva">
+        <header><h2>Tattva Tide</h2><span class="meta" id="tt-meta"></span></header>
+        <div class="card-body tattva-body">
+          <div class="ring" id="tt-ring"></div>
+          <div class="big">
+            <div class="tt-symbols"><span id="tt-sym-sub" class="sym sym-sub"></span><span class="of">of</span><span id="tt-sym-main" class="sym sym-main"></span></div>
+            <div class="value" id="tt-label">—</div>
+            <div class="sub" id="tt-elements">—</div>
+          </div>
+        </div>
+        <footer>
+          <div class="countdown"><span class="label">sub-tattva</span><span class="time" id="tt-left-sub">0:00</span></div>
+          <div class="countdown"><span class="label">tattva</span><span class="time" id="tt-left-main">0:00</span></div>
+          <div class="next"><span class="label">next</span><span id="tt-next">—</span></div>
+        </footer>
+      </article>
+
+      <article class="card" id="card-nadi">
+        <header><h2>Swara · Nadi</h2><span class="meta" id="nd-meta"></span></header>
+        <div class="card-body">
+          <div class="nadi-sides" id="nd-sides"><span class="side" data-side="LEFT">L</span><span class="side" data-side="BOTH">∣</span><span class="side" data-side="RIGHT">R</span></div>
+          <div class="big">
+            <div class="value" id="nd-nadi">—</div>
+            <div class="sub" id="nd-quality">—</div>
+          </div>
+        </div>
+        <footer>
+          <div class="countdown"><span class="label" id="nd-left-label">switch in</span><span class="time" id="nd-left">0:00</span></div>
+          <div class="next"><span class="label">tithi</span><span id="nd-tithi">—</span></div>
+        </footer>
+      </article>
+    </section>
+
+    <!-- TIMELINE -->
+    <section class="view hidden" id="view-timeline" data-view="timeline">
+      <div class="tl-controls">
+        <button class="ghost" id="tl-prev" aria-label="Previous day">‹</button>
+        <div class="tl-title" id="tl-title">—</div>
+        <button class="ghost" id="tl-next" aria-label="Next day">›</button>
+        <button class="ghost" id="tl-today">now</button>
+      </div>
+      <div class="tl-scroll" id="tl-scroll">
+        <div id="tl-strip"></div>
+      </div>
+      <p class="hint">Sunrise → sunrise. Tap anywhere on the strip to read every clock at that moment.</p>
+      <div class="tl-detail" id="tl-detail"></div>
+    </section>
+
+    <!-- LOG -->
+    <section class="view hidden" id="view-log" data-view="log">
+      <p class="hint">Check which nostril is actually flowing, then tap. The prediction of every clock is saved with it.</p>
+      <div class="log-buttons">
+        <button class="log-btn" data-actual="LEFT"><span class="k">LEFT</span><span class="n">Ida</span></button>
+        <button class="log-btn" data-actual="BOTH"><span class="k">BOTH</span><span class="n">Sushumna</span></button>
+        <button class="log-btn" data-actual="RIGHT"><span class="k">RIGHT</span><span class="n">Pingala</span></button>
+      </div>
+      <div class="log-feedback" id="log-feedback"></div>
+
+      <h3>Match rate</h3>
+      <div class="stats" id="stats"></div>
+
+      <h3>Recent entries</h3>
+      <div class="entries" id="entries"></div>
+
+      <div class="row">
+        <button class="ghost" id="export-csv">Export CSV</button>
+        <button class="ghost danger" id="clear-log">Clear log</button>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view hidden" id="view-settings" data-view="settings">
+      <form id="settings-form">
+        <h3>Location</h3>
+        <div class="row"><button type="button" class="ghost" id="geo-btn">Use my location</button><span class="meta" id="geo-status"></span></div>
+        <label>Name <input name="locationName" type="text" /></label>
+        <div class="row two">
+          <label>Latitude <input name="lat" type="number" step="0.0001" min="-89.9" max="89.9" inputmode="decimal" /></label>
+          <label>Longitude <input name="lon" type="number" step="0.0001" min="-180" max="180" inputmode="decimal" /></label>
+        </div>
+
+        <h3>Tattva</h3>
+        <label>Order
+          <select name="tattvaOrder">
+            <option value="prithvi-apas">Akasha → Vayu → Tejas → Prithvi → Apas (Golden Dawn)</option>
+            <option value="apas-prithvi">Akasha → Vayu → Tejas → Apas → Prithvi</option>
+          </select>
+        </label>
+        <label>Duration mode
+          <select name="tattvaDurationMode">
+            <option value="equal">Golden Dawn equal (24 min each, 2 h cycle)</option>
+            <option value="prasad">Rama Prasad unequal (⚠ unverified)</option>
+          </select>
+        </label>
+        <div class="note" id="prasad-note"></div>
+        <label>Sub-tattva opens with
+          <select name="subTattvaStart">
+            <option value="own">the tattva's own sub-tattva (Vayu of Vayu first)</option>
+            <option value="akasha">Akasha (Akasha of Vayu first)</option>
+          </select>
+        </label>
+
+        <h3>Swara</h3>
+        <div class="row two">
+          <label>Switch every (min) <input name="nadiSwitchMin" type="number" step="1" min="5" max="240" inputmode="numeric" /></label>
+          <label>Sushumna ± (min) <input name="sushumnaWindowMin" type="number" step="0.5" min="0" max="30" inputmode="decimal" /></label>
+        </div>
+
+        <div class="row">
+          <button type="submit" class="primary">Save</button>
+          <button type="button" class="ghost" id="reset-settings">Reset defaults</button>
+        </div>
+        <p class="meta" id="settings-status"></p>
+      </form>
+    </section>
+
+    <!-- HELP -->
+    <section class="view hidden" id="view-help" data-view="help">
+      <div class="prose">
+        <h3>What this is</h3>
+        <p>Three traditional clocks, all counted from the <b>local sunrise</b> rather than midnight. Before today's sunrise, you are still in yesterday's day. The NOW tab shows where you are in each; TIMELINE lets you plan; LOG is for testing the swara prediction against your own breath.</p>
+
+        <h3>Reading the sun bar</h3>
+        <p>The thin bar under the title runs from sunrise to the next sunrise. The gold stretch is daylight, the dot is now.</p>
+
+        <h3>1 · Planetary Hour</h3>
+        <p>Sunrise→sunset is cut into 12 "day hours", sunset→sunrise into 12 "night hours". They are only 60 minutes long at the equinox. The first day hour belongs to the planet of the weekday (Sun on Sunday, Moon on Monday, Mars on Tuesday, Mercury on Wednesday, Jupiter on Thursday, Venus on Friday, Saturn on Saturday). From there the rulers follow the <b>Chaldean order</b>: Saturn ♄, Jupiter ♃, Mars ♂, Sun ☉, Venus ♀, Mercury ☿, Moon ☽, repeating. The card shows the ruling planet, which hour of day or night you are in, time left, and the next ruler.</p>
+
+        <h3>2 · Tattva Tide</h3>
+        <p>The Golden Dawn teaches that five elemental currents (tattvas) flow in turn, each for 24 minutes, starting with Akasha at sunrise:</p>
+        <ul class="tattva-key" id="tattva-key"></ul>
+        <p>One full round is two hours and repeats all day and night. Each tattva also contains all five as <b>sub-tattvas</b> of 4.8 minutes. "Tejas of Apas" means the Tejas sub-current inside the Apas tide. The ring on the card is one two-hour round; the gold dot is now. The small symbol is the sub-tattva, the large one the main tattva.</p>
+        <p>Sources disagree on two details, so both are settings: whether Prithvi or Apas comes last, and whether a tattva's sub-tattvas start with its own (Vayu of Vayu, Tejas of Vayu…) or always with Akasha. The "Rama Prasad unequal" duration mode is included but its numbers are <b>not verified</b> against the source; see the note in Settings.</p>
+
+        <h3>3 · Swara · Nadi</h3>
+        <p>Shiva Swarodaya says the breath favours one nostril at a time. <b>Ida</b> (left, lunar) or <b>Pingala</b> (right, solar) opens the day at sunrise depending on the lunar day (<b>tithi</b>): in the waxing fortnight (Shukla paksha) tithis 1–3 are Ida, 4–6 Pingala, 7–9 Ida, and so on; the waning fortnight (Krishna paksha) starts with Pingala. The side then switches every 60 minutes (2½ ghatikas). Around each switch there is a short <b>Sushumna</b> window where both flow; it is marked and its width is a setting.</p>
+        <p>The card shows the predicted side (L, both, R), the tithi with its paksha and Sanskrit name, and the time to the next switch.</p>
+
+        <h3>The experiment (LOG)</h3>
+        <p>Close one nostril, breathe, swap. Whichever is clearer is "flowing". Tap LEFT, RIGHT or BOTH. Each tap stores the time, what your body showed and what every clock predicted. The stats compare your body with the swara prediction overall, by time of day and by tithi. "Side only" ignores Sushumna windows and compares left/right alone. Export as CSV any time.</p>
+
+        <h3>Timeline</h3>
+        <p>A strip from this sunrise to the next with three lanes: planetary hours, tattvas and nadi. Drag sideways to scroll, tap to read all values at that moment, use ‹ › to look at other days. Planetary hours are shaded, not coloured; the tattva colours are the only bright things on purpose.</p>
+
+        <h3>Offline &amp; install</h3>
+        <p>Once loaded over https (or localhost) the app caches itself. On iPhone: Share → Add to Home Screen. On Android: menu → Install app. Settings and the log live in this browser's storage only.</p>
+
+        <h3>Assumptions</h3>
+        <ul>
+          <li>Sunrise/sunset/moon phase come from the <code>suncalc</code> library (±1–2 min).</li>
+          <li>Tithi is derived from the Moon–Sun elongation angle (1/30 of a lunation each) and read at sunrise.</li>
+          <li>Weekday for the planetary hour is the local solar weekday of the sunrise, independent of your phone's time zone.</li>
+          <li>Everything here is for personal experiment, not a claim about anything.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabs" id="tabs">
+    <button data-view="now" class="active">Now</button>
+    <button data-view="timeline">Timeline</button>
+    <button data-view="log">Log</button>
+    <button data-view="settings">Settings</button>
+    <button data-view="help">Help</button>
+  </nav>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

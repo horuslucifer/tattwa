@@ -1,0 +1,15 @@
+{
+  "name": "tattva-tide",
+  "version": "0.1.0",
+  "description": "Live planetary-hour / tattva / swara clock (Golden Dawn & Shiva Swarodaya), offline PWA.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "test": "TZ=America/Los_Angeles node --test test/*.test.js",
+    "start": "npx --yes serve -l 5173 .",
+    "icons": "node tools/make-icons.js"
+  },
+  "dependencies": {
+    "suncalc": "^1.9.0"
+  }
+}
